@@ -1,3 +1,3 @@
 package com.nicomahnic.sharecsv
 
-expect fun shareFile(): Int
+expect fun shareFile(data: String, name: String): Int
