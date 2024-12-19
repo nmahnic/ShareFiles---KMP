@@ -12,6 +12,32 @@ import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 
 object IOSShareFile {
+    private const val WHATSAPP_BASE_URL = "http://api.whatsapp.com/send"
+    private const val WHATSAPP_PHONE_PARAM = "?phone="
+    private const val WHATSAPP_TEXT_PARAM = "&text="
+
+    fun openWhatsapp(data: String, phoneNumber: String) {
+        try {
+            val url = buildWhatsappUri(phoneNumber, data).also { println("NAMG: message $it") }
+            val nsUrl = NSURL(string = url)
+            if (UIApplication.sharedApplication.canOpenURL(nsUrl)) {
+                UIApplication.sharedApplication.openURL(nsUrl, emptyMap<Any?, Any>()) { success ->
+                    if (!success) {
+                        println("Failed to open WhatsApp URL.")
+                    }
+                }
+            } else {
+                // Handle the case where WhatsApp is not installed (e.g., show an alert)
+                println("WhatsApp is not installed.")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun buildWhatsappUri(phone: String, message: String) =
+        WHATSAPP_BASE_URL + WHATSAPP_PHONE_PARAM + phone + WHATSAPP_TEXT_PARAM + message
+
     fun shareFile(data: String, name: String): Int {
         val fileUrl = saveFile(name, data)
 
@@ -48,3 +74,6 @@ object IOSShareFile {
 }
 
 actual fun shareFile(data: String, name: String): Int = IOSShareFile.shareFile(data, name)
+
+actual fun openWhatsapp(data: String, phoneNumber: String) =
+    IOSShareFile.openWhatsapp(data, phoneNumber)

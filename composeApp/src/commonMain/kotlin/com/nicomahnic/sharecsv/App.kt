@@ -39,6 +39,10 @@ fun App() {
 
     MaterialTheme {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            val number = "" //TODO("+34XXXXXXXX")
+            Button(onClick = { openWhatsapp(data.joinToString("\n"), number) }) {
+                Text("Generate random whatsapp message")
+            }
             Button(onClick = { shareFile(data.joinToString("\n"), name) }) {
                 Text("Generate random file")
             }

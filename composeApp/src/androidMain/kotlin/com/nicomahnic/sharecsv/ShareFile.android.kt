@@ -3,6 +3,7 @@ package com.nicomahnic.sharecsv
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import androidx.core.content.FileProvider.getUriForFile
 import java.io.File
@@ -15,6 +16,25 @@ object AndroidShareFile {
     fun setUp(context: Context) {
         application = context as Application
     }
+
+    private const val WHATSAPP_BASE_URL = "http://api.whatsapp.com/send"
+    private const val WHATSAPP_PHONE_PARAM = "?phone="
+    private const val WHATSAPP_TEXT_PARAM = "&text="
+
+    fun openWhatsapp(data: String, phoneNumber: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
+            val url = buildWhatsappUri(phoneNumber, data)
+            intent.data = Uri.parse(url)
+            application.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun buildWhatsappUri(phone: String, message: String) =
+        WHATSAPP_BASE_URL + WHATSAPP_PHONE_PARAM + phone + WHATSAPP_TEXT_PARAM + message
 
     fun shareFile(data: String, name: String): Int {
         val file2 = createFile(data, name)
@@ -54,3 +74,5 @@ object AndroidShareFile {
 }
 
 actual fun shareFile(data: String, name: String): Int = AndroidShareFile.shareFile(data, name)
+
+actual fun openWhatsapp(data: String, phoneNumber: String) = AndroidShareFile.openWhatsapp(data, phoneNumber)
